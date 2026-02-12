@@ -1,5 +1,6 @@
 import pytest
-from app import app, db
+from app import app
+from models.link import db
 
 
 @pytest.fixture
