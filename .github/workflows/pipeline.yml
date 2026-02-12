@@ -1,0 +1,49 @@
+name: Python CI Pipeline
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        # Spins up a real Postgres DB inside GitHub for the tests
+        services:
+            postgres:
+                image: postgres:15
+                env:
+                    POSTGRES_DB: insight_vault_test
+                    POSTGRES_PASSWORD: password
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  enable-cache: true
+
+            - name: Set up Python
+              run: uv python install
+
+            - name: Install dependencies
+              run: uv sync
+
+            - name: Lint with Ruff
+              run: uv run ruff check .
+
+            - name: Run Tests
+              env:
+                  # Flask to use the CI's temporary database
+                  DATABASE_URL: postgresql://postgres:password@localhost:5432/insight_vault_test
+              run: uv run pytest --cov=app
