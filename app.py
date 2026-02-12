@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+from models.link import db, Link
 
 # Loads variables from .env file
 load_dotenv()
@@ -12,8 +12,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# initialise the DB
-db = SQLAlchemy(app)
+# connect the DB to the app
+db.init_app(app)
 
 
 @app.route("/health")
@@ -24,7 +24,11 @@ def health_check():
 if __name__ == "__main__":
     try:
         with app.app_context():
+            db.create_all()
+            print("✅ Database tables created/verified!")
+
             db.engine.connect()
             print("✅ Database connection successful!")
+            app.run(debug=True)
     except Exception as e:
-        print(f"❌ Database connection failed: {e}")
+        print(f"❌ Database error: {e}")
