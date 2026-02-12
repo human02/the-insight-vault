@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify
 from dotenv import load_dotenv
-from models.link import db, Link
+from models.link import db
 
 # Loads variables from .env file
 load_dotenv()
