@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from models.link import db, Link
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
+from flask_migrate import Migrate
 
 # Loads variables from .env file
 load_dotenv()
@@ -17,6 +18,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # connect the DB to the app
 db.init_app(app)
 
+# Setup for flask-migrate (built on Alembic)
+migrate = Migrate(app, db)
 
 # --- Global Error Handlers ---
 
