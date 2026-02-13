@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from models.link import db, Link
-from sqlalchemy.exc import SQLAlchemyError  # Add this import
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
 # Loads variables from .env file
@@ -49,6 +49,11 @@ def handle_generic_exception(e):
 # --- Routes ---
 
 
+@app.route("/")
+def homepage():
+    return jsonify({"message": "Welcome to the Insight Vault", "version": "0.0.1"}), 200
+
+
 @app.route("/health")
 def health_check():
     return jsonify({"status": "connected", "database": "PostgresSQL"}), 200
@@ -72,6 +77,12 @@ def create_link():
     db.session.commit()
 
     return jsonify(new_link.to_dict()), 201
+
+
+@app.route("/links", methods=["GET"])
+def get_all_links():
+    data = Link.query.order_by(Link.created_at.desc()).all()
+    return jsonify([link.to_dict() for link in data]), 200
 
 
 if __name__ == "__main__":  # pragma: no cover
