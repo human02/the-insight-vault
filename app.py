@@ -90,12 +90,12 @@ def get_all_links():
 
 if __name__ == "__main__":  # pragma: no cover
     try:
-        # with app.app_context():
-        #     db.create_all()
-        print("✅ Database tables created/verified!")
+        with app.app_context():
+            # db.create_all()
+            print("✅ Database tables created/verified!")
 
-        db.engine.connect()
-        print("✅ Database connection successful!")
-        app.run(debug=True)
+            db.engine.connect()
+            print("✅ Database connection successful!")
+            app.run(debug=True)
     except Exception as e:
         print(f"❌ Database error: {e}")
